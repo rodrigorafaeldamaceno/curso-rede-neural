@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exercício: implementar as funçẽos lógicas
+# exercício: implementar as funções lógicas
 
 #*******************************************************************************
 # classe de base
@@ -8,59 +8,56 @@ class Perceptron:
 
   def __init__(self):
     # por conveniência, o dataset será armazenado nesta classe, em redes reais isso não ocorre
-    self.dataset = [
+    self.ds = [
       [0, 0],
       [0, 1],
       [1, 0],
       [1, 1],
     ]
+    self.passo = lambda v: 1 if v >= 0 else 0 # representando função passo como função anônima
+    #def passo(self, v):
+    #  return 1 if v >= 0 else 0
 
-  def passo(self, v):
-    return 1 if v >= 0 else 0
+  def ativaDs(self):
+    for x in self.ds:
+      self.ativaX(x)
 
-  def f(self, x1, x2):
+  def ativaX(self, x):
+    v = self.calculaV(x[0], x[1])
+    y = self.passo(v)
+    msg = "f(" + str(x[0]) + ", " + str(x[1]) + ") = " + str(y)
+    print(msg)
+
+  def calculaV(self, x1, x2):
     return 0 # classe filha sobrescreve
 
-  def ativaDataset(self):
-    for instancia in self.dataset:
-      self.ativaInstancia(instancia)
-
-  def ativaInstancia(self, instancia):
-    x1 = instancia[0]
-    x2 = instancia[1]
-    y = self.f(x1, x2)
-    msg = "f(" + str(x1) + ", " + str(x2) + ") = " + str(y)
-    print(msg)
 
 #*******************************************************************************
 # e-lógico
 #*******************************************************************************
 class And(Perceptron):
 
-  def f(self, x1, x2):
+  def calculaV(self, x1, x2):
     v = x1 + x2 - 1.5
-    y = self.passo(v)
-    return y
+    return v
 
 #*******************************************************************************
 # ou-lógico
 #*******************************************************************************
 class Or(Perceptron):
 
-  def f(self, x1, x2):
+  def calculaV(self, x1, x2):
     v = x1 + x2 - 0.5
-    y = self.passo(v)
-    return y
+    return v
 
 #*******************************************************************************
 # implicação
 #*******************************************************************************
 class Implica(Perceptron):
 
-  def f(self, x1, x2):
+  def calculaV(self, x1, x2):
     v = - x1 + x2 + 0.5
-    y = self.passo(v)
-    return y
+    return v
 
 #*******************************************************************************
 # não-lógico
@@ -69,27 +66,29 @@ class Implica(Perceptron):
 class Not(Perceptron):
 
   def __init__(self):
-    self.dataset = [[0], [1]]
+    super().__init__()    # chama construtor da classe base
+    self.ds = [0, 1]
 
-  def f(self, x1):
+
+  def calculaV(self, x1):
     v = -x1 + 0.5
-    return  self.passo(v)
+    return v
 
-  def ativaInstancia(self, instancia):
-    x1 = instancia[0]
-    y = self.f(x1)
+  def ativaX(self, x1):
+    v = self.calculaV(x1)
+    y = self.passo(v)
     msg = "f(" + str(x1) + ") = " + str(y)
     print(msg)
 
 def main():
   print("rede and")
-  And().ativaDataset()
+  And().ativaDs()
   print("rede or")
-  Or().ativaDataset()
+  Or().ativaDs()
   print("rede implica")
-  Implica().ativaDataset()
+  Implica().ativaDs()
   print("rede not")
-  Not().ativaDataset()
+  Not().ativaDs()
 
 
 main()
